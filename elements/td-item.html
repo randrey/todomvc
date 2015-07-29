@@ -10,20 +10,31 @@
 <link rel="import" href="../components/polymer/polymer.html">
 <link rel="import" href="td-input.html">
 
-<polymer-element name="td-item" extends="li" attributes="item editing" on-blur="{{commitAction}}">
+<dom-module name="td-item" extends="li" on-blur="commitAction">
 	<template>
 		<link rel="stylesheet" href="td-item.css">
-		<div class="view {{ {completed: item.completed, editing: editing} | tokenList }}" hidden?="{{editing}}" on-dblclick="{{editAction}}">
-			<input type="checkbox" class="toggle" checked="{{item.completed}}" on-click="{{itemChangeAction}}">
+		<div class="view {{ {completed: item.completed, editing: editing} | tokenList }}" hidden$="{{editing}}" on-dblclick="editAction">
+			<input type="checkbox" class="toggle" checked="{{item.completed}}" on-click="itemChangeAction">
 			<label>{{item.title}}</label>
-			<button class="destroy" on-click="{{destroyAction}}"></button>
+			<button class="destroy" on-click="destroyAction"></button>
 		</div>
-		<input is="td-input" id="edit" class="edit" value="{{item.title}}" hidden?="{{!editing}}" on-td-input-commit="{{commitAction}}" on-td-input-cancel="{{cancelAction}}">
+		<input is="td-input" id="edit" class="edit" value="{{item.title}}" hidden$="{{!editing}}" on-td-input-commit="commitAction" on-td-input-cancel="cancelAction">
 	</template>
 	<script>
 		(function() {
-			Polymer('td-item', {
-				editing: false,
+			Polymer({
+				is: 'td-item',
+				extends: 'li',
+				listeners: {
+					'blur': 'commitAction'
+				},
+				properties: {
+					item: String,
+					editing: {
+						type: Boolean,
+						value: false
+					}
+				},
 				editAction: function() {
 					this.editing = true;
 					// schedule focus for the end of microtask, when the input will be visible
@@ -53,4 +64,4 @@
 			});
 		})();
 	</script>
-</polymer-element>
+</dom-module>
